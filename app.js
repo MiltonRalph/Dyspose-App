@@ -11,10 +11,23 @@ const productRoutes = require('./routes/productRoutes');
 
 dotenv.config();
 
+const allowedOrigins = [
+  'https://dyspose.netlify.app',
+];
+
 const app = express();
 app.use(express.json());
 app.use(morgan('dev'));
-app.use(cors());
+app.use(cors({
+  origin: (origin, callback) => {
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+}));
 app.use(bodyParser.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // Serve static files from 'uploads' folder
 
